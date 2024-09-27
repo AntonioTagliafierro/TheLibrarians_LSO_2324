@@ -1,0 +1,33 @@
+services:
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    container_name: database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: library
+    ports:
+      - "5433:5432"
+    networks:
+      - backend
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    volumes:
+      - ./server.c:/app/server.c
+    command: ["./start.sh"]
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
